@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 class JSON_Classifier():
     
@@ -15,9 +16,17 @@ class JSON_Classifier():
                 for performance in work['performances']:
                     self.segments = []
                     for segment in performance['segments']:
-                        self.segments.append({ 'id': segment['id'], 'start': segment['start'], 'ende': segment['end'] })
+                        start = strToSeconds(segment['start'])
+                        end = strToSeconds(segment['end'])
+                        self.segments.append({ 'id': segment['id'], 'start': start, 'ende': end })
 
-               
+def strToSeconds(str):
+    hr, min, sec = map(int, str.split(':'))
+    sec = (((hr * 60) + min) * 60) + sec
+    return sec
 
-                   
 
+
+                
+
+ 
