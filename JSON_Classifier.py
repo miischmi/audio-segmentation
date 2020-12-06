@@ -13,8 +13,11 @@ class JSON_Classifier():
             data = json.load(jasonfile)
             for work in data['works']:
                 for performance in work['performances']:
+                    self.segments = []
                     for segment in performance['segments']:
-                        for key, value in segment.items():
-                            print('Segment ' + segment['id'])
-                            print(key, ':', value)
+                        self.segments.append({ 'id': segment['id'], 'start': segment['start'], 'ende': segment['end'] })
+
+               
+
+                   
 

@@ -13,5 +13,3 @@ The associated work is in possession of the author and the lecturer and can be r
 # Segmentation Tool
 All requirements needed to run the program can be found in the file <i>requirements.txt</i>.
 
-
- 

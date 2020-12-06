@@ -1,0 +1,235 @@
+{
+    "artists": [
+        {
+            "label": "Loretta Di Franco",
+            "img_url": "http://lorettadifranco.com/images/lauretta.jpg",
+            "wikidata_uri": "http://entity.wikidata.org/Q22344313"
+        },
+        {
+            "label": "Jean Fenn",
+            "img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Jean_Fenn_1956.JPG/457px-Jean_Fenn_1956.JPG",
+            "wikidata_uri": "http://entity.wikidata.org/Q6170652"
+        },
+        {
+            "label": "Paul Franke",
+            "img_url": "https://cdn.shopify.com/s/files/1/0257/3165/products/adp239.jpeg?v=1497475882",
+            "wikidata_uri": "http://entity.wikidata.org/Q7150719"
+        },
+        {
+            "label": "Nicolai Gedda",
+            "img_url": "https://upload.wikimedia.org/wikipedia/commons/8/82/Nicolai_Gedda_1959.jpg",
+            "wikidata_uri": "http://entity.wikidata.org/Q446635"
+        },
+        {
+            "label": "Jerome Hines",
+            "img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Jeromhinesportrait1958.jpg/440px-Jeromhinesportrait1958.jpg",
+            "wikidata_uri": "http://entity.wikidata.org/Q1093191"
+        },
+        {
+            "label": "Lucia Popp",
+            "img_url": "https://csoarchives.files.wordpress.com/2014/11/lucia-popp.jpg",
+            "wikidata_uri": "http://entity.wikidata.org/Q241014"
+        },
+        {
+            "label": "Hermann Prey",
+            "img_url": "https://www.bach-cantatas.com/Pic-Bio-P/Prey-Hermann-7.jpeg",
+            "wikidata_uri": "http://entity.wikidata.org/Q61080"
+        },
+        {
+            "label": "Teresa Zylis-Gara",
+            "img_url": "https://images-na.ssl-images-amazon.com/images/I/4112ro%2BtZpL.jpg",
+            "wikidata_uri": "http://entity.wikidata.org/Q515798"
+        }
+    ],
+    "works": [
+        {
+            "title": "Die Zauberflo\u0308te",
+            "composer": "Mozart",
+            "roles": [
+                {
+                    "label": "Tamino",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "Pamina",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "Papageno",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "Papagena",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "Sarastro",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "Queen of the Night",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "Monostatos",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798"
+                },
+                {
+                    "label": "First Lady",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Three ladies"
+                },
+                {
+                    "label": "Second Lady",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Three ladies"
+                },
+                {
+                    "label": "Third Lady",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Three ladies"
+                },
+                {
+                    "label": "First Boy",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Three boys"
+                },
+                {
+                    "label": "Second Boy",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Three boys"
+                },
+                {
+                    "label": "Third Boy",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Three boys"
+                },
+                {
+                    "label": "First Armoured Man",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Two armoured men"
+                },
+                {
+                    "label": "Second Armoured Man",
+                    "wikidata_uri": "http://entity.wikidata.org/Q515798",
+                    "group": "Two armoured men"
+                }
+            ],
+            "performances": [
+                {
+                    "venue": "Metropolitan Opera, New York",
+                    "date": "1970-01-17",
+                    "cast": [
+                        {
+                            "role": "Speaker",
+                            "artist": "Walter Cassel"
+                        },
+                        {
+                            "role": "Papagena",
+                            "artist": "Loretta Di Franco"
+                        },
+                        {
+                            "role": "First Lady",
+                            "artist": "Jean Fenn"
+                        },
+                        {
+                            "role": "Monostatos",
+                            "artist": "Paul Franke"
+                        },
+                        {
+                            "role": "Tamino",
+                            "artist": "Nicolai Gedda"
+                        },
+                        {
+                            "role": "Sarastro",
+                            "artist": "Jerome Hines"
+                        },
+                        {
+                            "role": "Queen",
+                            "artist": "Lucia Popp"
+                        },
+                        {
+                            "role": "Papageno",
+                            "artist": "Hermann Prey"
+                        },
+                        {
+                            "role": "Pamina",
+                            "artist": "Teresa Zylis-Gara"
+                        }
+                    ],
+                    "id": "WAM-020",
+                    "recording": "NYCO-Tape20-Track2-Channel1",
+                    "segments": [
+                        {
+                            "id": 1,
+                            "label": "Overture",
+                            "type": "instrumental",
+                            "audio_url": "https://operatinder.s3.amazonaws.com/WAM-020-T2-C1_Q5064_01.mp3",
+                            "start": "00:00:00",
+                            "end": "00:06:23"
+                        },
+                        {
+                            "id": 2,
+                            "label": "Zu hilfe zu hilfe!",
+                            "type": "quartet",
+                            "roles": [
+                                "Tamino",
+                                "First Lady",
+                                "Second Lady",
+                                "Third Lady"
+                            ],
+                            "audio_url": "https://operatinder.s3.amazonaws.com/WAM-020-T2-C1_Q5064_02.mp3",
+                            "start": "00:06:24",
+                            "end": "00:12:19"
+                        },
+                        {
+                            "id": 3,
+                            "label": "Wo bin ich? Ist es Phantasie",
+                            "type": "aria",
+                            "roles": [
+                                "Tamino"
+                            ],
+                            "audio_url": "https://operatinder.s3.amazonaws.com/WAM-020-T2-C1_Q5064_03.mp3",
+                            "start": "00:12:27",
+                            "end": "00:12:40"
+                        },
+                        {
+                            "id": 4,
+                            "label": "Der Vogelf\u00e4nger bin ich ja",
+                            "type": "aria",
+                            "roles": [
+                                "Papageno"
+                            ],
+                            "audio_url": "https://operatinder.s3.amazonaws.com/WAM-020-T2-C1_Q5064_04.mp3",
+                            "start": "00:12:39",
+                            "end": "00:15:06"
+                        },
+                        {
+                            "id": 5,
+                            "label": "He da! Was da!",
+                            "type": "recitative",
+                            "roles": [
+                                "Tamino",
+                                "Papageno"
+                            ],
+                            "audio_url": "https://operatinder.s3.amazonaws.com/WAM-020-T2-C1_Q5064_05.mp3",
+                            "start": "00:15:14",
+                            "end": "00:18:30"
+                        },
+                        {
+                            "id": 6,
+                            "label": "Dies Bildnis ist bezaubernd sch\u00f6n",
+                            "type": "aria",
+                            "roles": [
+                                "Tamino"
+                            ],
+                            "audio_url": "https://operatinder.s3.amazonaws.com/WAM-020-T2-C1_Q5064_06.mp3",
+                            "start": "00:18:32",
+                            "end": "00:22:41"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
