@@ -1,1 +1,2 @@
 assets/*.wav
+__pycache__/*

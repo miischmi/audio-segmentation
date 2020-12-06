@@ -17,4 +17,10 @@ class Music_parser():
             recording_segments.append(recording[split_beginning:split_ending])
         print(len(recording_segments))
         print(len(recording_segments[0]))
-        return 'hi'
+        return recording_segments
+
+    def chroma_censes(self, segments, sample_rate):
+        chroma_cens_segments = []
+        for segment in segments:
+            chroma_cens_segments.append(librosa.feature.chroma_cens(segment, sample_rate))
+        return chroma_cens_segments
