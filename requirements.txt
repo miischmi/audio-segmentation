@@ -1,3 +1,5 @@
 librosa
 pydub
 matplotlib
+json
+scipy

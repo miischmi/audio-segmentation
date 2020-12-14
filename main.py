@@ -14,10 +14,11 @@ music_parser = Music_parser()
 musicRef, sample_rate_ref = music_parser.readMusicFile('assets/Reference_1min.wav')
 musicUnb, sample_rate_unb = music_parser.readMusicFile('assets/unbek_2min.wav')
 
-duration = librosa.get_duration(musicUnb)
-print(duration)
-frame_length = 44100
-hopsize = 2205
+duration_song = librosa.get_duration(musicUnb)
+# duration_window = 
+print(duration_song)
+frame_length =(duration_song * sample_rate_unb)
+hopsize = 512
 fs1 = sample_rate_unb/hopsize
 fs2 = sample_rate_unb/hopsize
 
