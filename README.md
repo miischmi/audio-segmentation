@@ -13,5 +13,3 @@ The associated work is in possession of the author (michelle.schmid@students.bfh
 # Segmentation Tool
 All requirements needed to run the program can be found in the file <i>requirements.txt</i>.
 
-https://rramnauth2220.github.io/blog/posts/code/200525-feature-extraction.html
-https://www.audiolabs-erlangen.de/resources/MIR/FMP/C7/C7S2_CENS.html
