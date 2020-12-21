@@ -13,3 +13,6 @@ The associated work is in possession of the author (michelle.schmid@students.bfh
 # Segmentation Tool
 All requirements needed to run the program can be found in the file <i>requirements.txt</i>.
 
+# Requirements
+Python 3.8
+pip

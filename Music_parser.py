@@ -20,14 +20,14 @@ class Music_parser():
         # print(len(recording_segments[0]))
         return recording_segments
     
-    def compute_chromagrams(self, segments, sample_rate, tuning = None, norm = None, hop_length = 512, n_fft = 2048):
+    def compute_chromagrams(self, segments, sample_rate, norm = None, hop_length = 512, n_fft = 2048, window = 'hann'):
         segments_chromagrams = []
         for segment in segments:
-            segments_chromagrams.append(librosa.feature.chroma_stft(y= segment, sr= sample_rate, tuning= tuning, norm= norm, hop_length= hop_length, n_fft= n_fft))
+            segments_chromagrams.append(librosa.feature.chroma_stft(y= segment, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window))
         return segments_chromagrams
 
-    def compute_one_chromagram(self, music, sample_rate, tuning = None, norm = None, hop_length = 512, n_fft = 2048):
-        return librosa.feature.chroma_stft(y= music, sr= sample_rate, tuning= tuning, norm= norm, hop_length= hop_length, n_fft= n_fft)
+    def compute_one_chromagram(self, music, sample_rate, norm = None, hop_length = 512, n_fft = 2048, window = 'hann'):
+        return librosa.feature.chroma_stft(y= music, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window)
 
     
 
