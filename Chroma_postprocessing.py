@@ -100,7 +100,7 @@ def CENS_downsampling(X, Fs, filt_len=41, down_sampling=10, w_type='boxcar'):
     Fs_feature = Fs / down_sampling
     return X_smooth, Fs_feature
 
-def compute_CENS_from_chromagram(C, Fs=1, ell=41, d=10, quant=True):
+def compute_CENS_from_chromagram(C, Fs= 1, ell= 41, d= 10, quant= True):
     """Compute CENS features from chromagram
 
     From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_CENS.ipynb
@@ -118,12 +118,26 @@ def compute_CENS_from_chromagram(C, Fs=1, ell=41, d=10, quant=True):
     """
     C_norm = normalize_feature_sequence(C, norm='1')
     C_Q = quantize_matrix(C_norm) if quant else C_norm
-    C_smooth, Fs_CENS = CENS_downsampling(C_Q, Fs, filt_len=ell, down_sampling=d, w_type='hann')
+    C_smooth, Fs_CENS = CENS_downsampling(C_Q, Fs, filt_len= ell, down_sampling= d, w_type= 'hann')
     C_CENS = normalize_feature_sequence(C_smooth, norm='2')
 
     return C_CENS, Fs_CENS
 
-def compute_CENS_from_chromagrams_seg(segments, Fs=1, ell=41, d=10, quant=True):
+def compute_CENS_from_chromagrams_seg(segments, Fs= 1, ell=41, d=10, quant= True):
+    """Compute CENS features from an array of chromagrams
+
+    Adapted from: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_CENS.ipynb
+
+    Args:
+        segments: array of chromagrams
+        Fs: Feature rate of chromagrams
+        ell: Smoothing length
+        d: Downsampling factor
+        quant: Apply quantization
+
+    Returns:
+        cens_array: array of CENS feaatures
+    """
     cens_array = []
     for C in segments:
         C_norm = normalize_feature_sequence(C, norm='1')

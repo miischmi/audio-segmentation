@@ -3,12 +3,16 @@ from datetime import datetime
 
 class JSON_Classifier():
     
-    def __init__(self):
-        pass
-
     def readJSON(self, path):
-        """
-        Method to read a JSON-file
+        """Reading the JSON file with the metadata of the recording
+
+        Args:
+            id: ID of the Segment
+            start: Start of the segment in seconds
+            end: end of the segment in seconds
+        
+        Returns: 
+            a map of segment-metadata
         """
         with open(path) as jasonfile:
             data = json.load(jasonfile)

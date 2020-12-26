@@ -1,13 +1,17 @@
 import librosa
+import numpy as np
 
 class Music_parser():
-    def __init__(self):
-        pass
-
+    
     def readMusicFile(self, path):
         return librosa.load(path)
 
     def splitReferenceRecording(self, segments, sample_rate, recording):
+        """Split a Recording in segments according to a given JSON file
+                
+        Returns: 
+            recording_segments: array of arrays of librosa floating point time series
+        """ 
         recording_segments = []
         for segment in segments:
             start_split_at_second = segment['start']
@@ -21,6 +25,15 @@ class Music_parser():
         return recording_segments
     
     def compute_chromagrams(self, segments, sample_rate, norm = None, hop_length = 512, n_fft = 2048, window = 'hann'):
+        """Computation of a chromagram for each segment in an array of segments
+
+        Args:
+            segments: array of segments
+            rest: see documentation librosa.feature.chroma_stft
+                
+        Returns: 
+            segments_chromagrams: array of chromagrams
+        """ 
         segments_chromagrams = []
         for segment in segments:
             segments_chromagrams.append(librosa.feature.chroma_stft(y= segment, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window))
@@ -29,7 +42,24 @@ class Music_parser():
     def compute_one_chromagram(self, music, sample_rate, norm = None, hop_length = 512, n_fft = 2048, window = 'hann'):
         return librosa.feature.chroma_stft(y= music, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window)
 
-    
+    def compute_power_db(self, x, sr, win_len_sec=0.1, power_ref=10**(-12)):
+        """Computation of the signal power in dB
+        
+        From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C1/C1S3_Dynamics.ipynb
+        
+        Args: 
+            x: Signal (waveform) to be analyzed
+            sr: Sampling rate
+            win_len_sec: Length (seconds) of the window
+            power_ref: Reference power level (0 dB)
+        
+        Returns: 
+            power_db: Signal power in dB
+        """     
+        win_len = round(win_len_sec * sr)
+        win = np.ones(win_len) / win_len
+        power_db = 10 * np.log10(np.convolve(x**2, win, mode='same') / power_ref)    
+        return power_db
 
 
 
