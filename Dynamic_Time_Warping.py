@@ -1,6 +1,25 @@
 import numpy as np
+import scipy.spatial
 import librosa
 import matplotlib.pyplot as plt
+from matplotlib import patches
+
+def compute_cost_matrix(X, Y, metric='euclidean'):
+    """Compute the cost matrix of two feature sequences
+
+    Notebook: C3/C3S2_DTWbasic.ipynb
+
+    Args:
+        X: Sequence 1
+        Y: Sequence 2
+        metric: Cost metric, a valid strings for scipy.spatial.distance.cdist
+
+    Returns:
+        C: Cost matrix
+    """
+    X, Y = np.atleast_2d(X, Y)
+    C = scipy.spatial.distance.cdist(X.T, Y.T, metric=metric)
+    return C
 
 def cost_matrix_dot(X, Y):
     """Computes cost matrix via dot product
@@ -63,6 +82,59 @@ def compute_accumulated_cost_matrix_subsequence_dtw_21(C):
     D = D[1:, 2:]
     return D
 
+def compute_matching_function_dtw(X, Y, stepsize=2):
+    """Compute matching function
+
+    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_AudioMatching.ipynb
+
+    Args:
+        X: Query feature sequence (given as K x N matrix)
+        Y: Database feature sequence (given as K x M matrix)
+        stepsize: Parameter for step size condition (1 or 2)
+
+    Returns:
+        Delta: DTW-based matching function
+        C: Cost matrix
+        D: Accumulated cost matrix
+    """
+    C = cost_matrix_dot(X, Y)
+    if stepsize == 1:
+        D = compute_accumulated_cost_matrix_subsequence_dtw(C)
+    if stepsize == 2:
+        D = compute_accumulated_cost_matrix_subsequence_dtw_21(C)
+    N, M = C.shape
+    Delta = D[-1, :] / N
+    return Delta, C, D
+
+def mininma_from_matching_function(Delta, rho=2, tau=0.2, num=None):
+    """Derives local minima positions of matching function in an iterative fashion
+
+    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_DiagonalMatching.ipynb
+
+    Args:
+        Delta: Matching function
+        rho: Parameter to exclude neighborhood of a matching position for subsequent matches
+        tau: Threshold for maximum Delta value allowed for matches
+        num: Maximum number of matches
+
+    Returns:
+        pos: Array of local minima
+    """
+    Delta_tmp = Delta.copy()
+    M = len(Delta)
+    pos = []
+    num_pos = 0
+    rho = int(rho)
+    if num is None:
+        num = M
+    while num_pos < num and np.sum(Delta_tmp < tau) > 0:
+        m = np.argmin(Delta_tmp)
+        pos.append(m)
+        num_pos += 1
+        Delta_tmp[max(0, m - rho):min(m + rho, M)] = np.inf
+    pos = np.array(pos).astype(int)
+    return pos
+        
 def compute_optimal_warping_path_subsequence_dtw(D, m=-1):
     """Given an accumulated cost matrix, compute the warping path for
        subsequence dynamic time warping with step sizes {(1, 0), (0, 1), (1, 1)}
@@ -135,59 +207,6 @@ def compute_optimal_warping_path_subsequence_dtw_21(D, m=-1):
     P = np.array(P)
     return P
 
-def mininma_from_matching_function(Delta, rho=2, tau=0.2, num=None):
-    """Derives local minima positions of matching function in an iterative fashion
-
-    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_DiagonalMatching.ipynb
-
-    Args:
-        Delta: Matching function
-        rho: Parameter to exclude neighborhood of a matching position for subsequent matches
-        tau: Threshold for maximum Delta value allowed for matches
-        num: Maximum number of matches
-
-    Returns:
-        pos: Array of local minima
-    """
-    Delta_tmp = Delta.copy()
-    M = len(Delta)
-    pos = []
-    num_pos = 0
-    rho = int(rho)
-    if num is None:
-        num = M
-    while num_pos < num and np.sum(Delta_tmp < tau) > 0:
-        m = np.argmin(Delta_tmp)
-        pos.append(m)
-        num_pos += 1
-        Delta_tmp[max(0, m - rho):min(m + rho, M)] = np.inf
-    pos = np.array(pos).astype(int)
-    return pos
-
-def compute_matching_function_dtw(X, Y, stepsize=2):
-    """Compute matching function
-
-    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_AudioMatching.ipynb
-
-    Args:
-        X: Query feature sequence (given as K x N matrix)
-        Y: Database feature sequence (given as K x M matrix)
-        stepsize: Parameter for step size condition (1 or 2)
-
-    Returns:
-        Delta: DTW-based matching function
-        C: Cost matrix
-        D: Accumulated cost matrix
-    """
-    C = cost_matrix_dot(X, Y)
-    if stepsize == 1:
-        D = compute_accumulated_cost_matrix_subsequence_dtw(C)
-    if stepsize == 2:
-        D = compute_accumulated_cost_matrix_subsequence_dtw_21(C)
-    N, M = C.shape
-    Delta = D[-1, :] / N
-    return Delta, C, D
-
 def matches_dtw(pos, D, stepsize=2):
     """Derives matches from positions for DTW-based strategy
 
@@ -212,5 +231,5 @@ def matches_dtw(pos, D, stepsize=2):
         matches[k, 0] = s
     return matches
     
-
+ 
 

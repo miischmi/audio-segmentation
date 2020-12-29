@@ -4,7 +4,7 @@ import numpy as np
 class Music_parser():
     
     def readMusicFile(self, path):
-        return librosa.load(path)
+        return librosa.load(path, sr= None)
 
     def splitReferenceRecording(self, segments, sample_rate, recording):
         """Split a Recording in segments according to a given JSON file
