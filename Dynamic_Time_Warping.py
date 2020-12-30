@@ -21,19 +21,6 @@ def compute_cost_matrix(X, Y, metric='euclidean'):
     C = scipy.spatial.distance.cdist(X.T, Y.T, metric=metric)
     return C
 
-def cost_matrix_dot(X, Y):
-    """Computes cost matrix via dot product
-
-    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_DiagonalMatching.ipynb
-
-    Args:
-        X, Y: Feature seqeuences (given as K x N and K x M matrices)
-
-    Returns:
-        C: cost matrix
-    """
-    return 1 - np.dot(X.T, Y)
-
 def compute_accumulated_cost_matrix_subsequence_dtw(C):
     """Given the cost matrix, compute the accumulated cost matrix for
        subsequence dynamic time warping with step sizes {(1, 0), (0, 1), (1, 1)}
@@ -97,7 +84,7 @@ def compute_matching_function_dtw(X, Y, stepsize=2):
         C: Cost matrix
         D: Accumulated cost matrix
     """
-    C = cost_matrix_dot(X, Y)
+    C = compute_cost_matrix(X, Y)
     if stepsize == 1:
         D = compute_accumulated_cost_matrix_subsequence_dtw(C)
     if stepsize == 2:

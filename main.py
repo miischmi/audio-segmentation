@@ -14,8 +14,8 @@ import numpy as np
 
 # Importing audio files
 music_parser = Music_parser()
-ref_recording, sr = music_parser.readMusicFile('assets/Reference_20sek.wav')
-test_recording, sr = music_parser.readMusicFile('assets/Reference_30sek.wav')
+ref_recording, sr = music_parser.readMusicFile('assets/WAM21_30sek.wav')
+test_recording, sr = music_parser.readMusicFile('assets/WAM21_12min.wav')
 
 
 # Importing the metadata from the JSON-file
@@ -28,8 +28,8 @@ meta_data.readJSON('assets/testdata.json')
 
 
 # Feature Extraction
-ref_length = librosa.get_duration(ref_recording)
-test_length = librosa.get_duration(test_recording)
+ref_length = librosa.get_duration(ref_recording, sr= sr)
+test_length = librosa.get_duration(test_recording, sr = sr)
 frame_length = 9600
 hopsize = 4800
 window = 'hann'
@@ -85,11 +85,11 @@ step_size1 = np.array([[1, 0], [0, 1], [1, 1]])
 step_size2 = np.array([[2, 1], [1, 2], [1, 1]])
 N, M = CENS_ref.shape[1], CENS_test.shape[1]
 C= dtw.compute_cost_matrix(CENS_ref, CENS_test)
-D, P = librosa.sequence.dtw(X= CENS_ref, Y= CENS_test, metric= 'euclidean', step_sizes_sigma= step_size1, subseq= True, backtrack= True)
-P = P[::-1, :]
+D, P = librosa.sequence.dtw(X= CENS_ref, Y= CENS_test, metric= 'euclidean', step_sizes_sigma= step_size2, subseq= True, backtrack= True)
+# P = P[::-1, :]
 Delta = D[-1, :] / N
-pos = dtw.mininma_from_matching_function(Delta, rho= N//2, tau=0.2)
-matches = dtw.matches_dtw(pos, D, stepsize= 1)
+pos = dtw.mininma_from_matching_function(Delta, rho= 0, tau=0.5, num= 1)
+matches = dtw.matches_dtw(pos, D, stepsize= 2)
 
 # Indices
 b_ast = D[-1, :].argmin()
