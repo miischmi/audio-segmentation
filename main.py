@@ -1,8 +1,7 @@
 from JSON_Classifier import JSON_Classifier
 from Music_parser import Music_parser
 from Chroma_postprocessing import compute_CENS_from_chromagram
-from Dynamic_Time_Warping import mininma_from_matching_function
-from Dynamic_Time_Warping import matches_dtw
+import Dynamic_Time_Warping as dtw
 import visualization as vis
 from matplotlib.patches import ConnectionPatch
 
@@ -66,8 +65,8 @@ test_chromagram = music_parser.compute_one_chromagram(test_recording, sr, norm= 
 
 title_r = r'$\ell_1$-normalized Chromagram, Sample:Reference Recording'
 title_t = r'$\ell_1$-normalized Chromagram, Sample:Test Recording'
-vis.plot_chromagram(ref_chromagram, sr= sr, title= title_r)
-vis.plot_chromagram(test_chromagram, sr= sr, title= title_t)
+# vis.plot_chromagram(ref_chromagram, sr= sr, title= title_r)
+# vis.plot_chromagram(test_chromagram, sr= sr, title= title_t)
 
 
 # Creating each CENS feature
@@ -77,27 +76,31 @@ CENS_test, fs = compute_CENS_from_chromagram(test_chromagram, sr, ell= ell, d= d
 CENS_ref, fs = compute_CENS_from_chromagram(ref_chromagram, sr, ell= ell, d= d)
 title_r = r'CENS$^{%d}_{%d}$-feature, Sample:Reference Recording' % (ell, d)
 title_t = r'CENS$^{%d}_{%d}$-feature, Sample:Test Recording' % (ell, d)
-vis.plot_CENS(CENS_ref, fs= fs, title= title_r)
-vis.plot_CENS(CENS_test, fs= fs, title= title_t)
+# vis.plot_CENS(CENS_ref, fs= fs, title= title_r)
+# vis.plot_CENS(CENS_test, fs= fs, title= title_t)
 
 
 # Matching
 step_size1 = np.array([[1, 0], [0, 1], [1, 1]])
-step_size2 = np.array([[1, 1], [2, 1], [1, 2]])
+step_size2 = np.array([[2, 1], [1, 2], [1, 1]])
 N, M = CENS_ref.shape[1], CENS_test.shape[1]
-
+C= dtw.compute_cost_matrix(CENS_ref, CENS_test)
 D, P = librosa.sequence.dtw(X= CENS_ref, Y= CENS_test, metric= 'euclidean', step_sizes_sigma= step_size1, subseq= True, backtrack= True)
+P = P[::-1, :]
 Delta = D[-1, :] / N
-pos = mininma_from_matching_function(Delta, rho= N//2, tau=0.2)
-matches = matches_dtw(pos, D, stepsize= 1)
+pos = dtw.mininma_from_matching_function(Delta, rho= N//2, tau=0.2)
+matches = dtw.matches_dtw(pos, D, stepsize= 1)
 
 # Indices
-# P from librosa.sequence.dtw starts at the end (b_ast) and ends with the beginning (a_ast)
 b_ast = D[-1, :].argmin()
-a_ast = P[-1, 1]
+a_ast = P[0, 1]
 
-vis.plot_a_costmatrix(D,P)
-vis.plot_delta(Delta, matches)
+print(matches)
+dtw.matches_in_seconds(matches, hopsize, fs, N)
+fig, ax = plt.subplots(2, 1, gridspec_kw={'width_ratios': [1], 'height_ratios': [1, 1]}, figsize=(8, 4), constrained_layout=True)
+vis.plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax)
 plt.show()
+
+
 
 

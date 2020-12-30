@@ -70,12 +70,12 @@ def plot_CENS(cens, fs= 48000, hopsize= 4800, title= None, cmap = 'gray_r', clim
     plt.figure(figsize=(15, 5))
     librosa.display.specshow(cens , x_axis='time', y_axis='chroma', sr= fs, hop_length= hopsize, cmap= cmap, clim= clim )
     plt.title(title)
-    plt.xlabel('Time (minutes)')
+    plt.xlabel('Time (seconds)')
     plt.yticks(np.arange(12), 'C C# D D# E F F# G G# A A# B'.split())
     plt.colorbar()
     plt.tight_layout()
 
-def plot_matches(matches, Delta, Fs=1, alpha=0.2, color='r', s_marker='o', t_marker=''):
+def plot_matches(ax, matches, Delta, Fs=1, alpha=0.2, color='r', s_marker='o', t_marker=''):
     """Plots matches into existing axis
 
     From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_DiagonalMatching.ipynb
@@ -87,41 +87,51 @@ def plot_matches(matches, Delta, Fs=1, alpha=0.2, color='r', s_marker='o', t_mar
         color: Color used to indicated matches
         s_marker, t_marker: Marker used to indicate start and end of matches
     """
-    axes = plt.gca()
-    y_min, y_max = axes.get_yim()
+    y_min, y_max = ax.get_ylim()
     for (s, t) in matches:
-        axes.plot(s/Fs, Delta[s], color=color, marker=s_marker, linestyle='None')
-        axes.plot(t/Fs, Delta[t], color=color, marker=t_marker, linestyle='None')
+        ax.plot(s/Fs, Delta[s], color=color, marker=s_marker, linestyle='None')
+        ax.plot(t/Fs, Delta[t], color=color, marker=t_marker, linestyle='None')
         rect = patches.Rectangle(((s-0.5)/Fs, y_min), (t-s+1)/Fs, y_max, facecolor=color, alpha=alpha)
-        axes.add_patch(rect) 
+        ax.add_patch(rect) 
 
-def plot_a_costmatrix(D, P, cmap= 'gray_r'):
-    """Plots accumulated cost matrix with optimal warping path
+def plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax, Fs= 1, cmap= 'gray_r'):
+    """Plots accumulated cost matrix with optimal warping path and matching function with matches
 
     Args:
         D: accumulated cost matrix
         P: optimal warping path
+        Delta: matching function
+        matches: Array containing matches (start, end)
+        ax: Axis
         cmap: colormapping
     """
     P = np.array(P) 
-    plt.figure(figsize=(90, 30))
-    plt.imshow(D, cmap= cmap, origin= 'lower', aspect= 'equal')
-    plt.plot(P[:, 1], P[:, 0], marker='o', color='r')
-    plt.clim([0, np.max(D)])
-    plt.colorbar()
-    plt.title('$D$ with optimal warping path')
-    plt.xlabel('Sequence Y')
-    plt.ylabel('Sequence X')    
+    ax[0].imshow(D, cmap= cmap, origin= 'lower', aspect= 'auto')
+    ax[0].plot(P[:, 1], P[:, 0], marker='o', color='r')
+    ax[0].set_title('$D$ with optimal warping path')
+    ax[0].set_xlabel('Sequence Y')
+    ax[0].set_ylabel('Sequence X')  
 
-def plot_delta(Delta, matches):
-    """Plots matching function with matches
+    ax[1].plot(Delta)
+    ax[1].set_ylim(0, 0.6)
+    plot_matches(ax= ax[1], matches= matches, Delta= Delta, Fs= Fs, s_marker= '', t_marker= 'o')
+    ax[1].set_title(r'Matching function $\Delta$')
+    ax[1].set_xlabel('Time (samples)')
+
+def plot_costmatrix(C, Fs= 9600, hopsize = 9600, cmap= 'gray_r'):
+    """Plots accumulated cost matrix with optimal warping path
 
     Args:
-        Delta: matching function
-        matches: Array containing matches (start, end)
+        c:  cost matrix
+        cmap: colormapping
     """
-    plt.figure(figsize=(8, 4))
-    plt.plot(Delta)
-    plt.ylim(0, 1)
-    plot_matches(matches, Delta, s_marker= '', t_marker= 'o')
-    plt.tight_layout()
+    N, M = C.shape
+    H= hopsize
+    left = - (N / Fs) / 2
+    right = C.shape[1] * H / Fs + (N / Fs) / 2
+    lower = - (N / Fs) / 2
+    upper = C.shape[0] * H / Fs + (N / Fs) / 2
+    plt.imshow(C, cmap=cmap, aspect='auto', origin='lower', extent=[left, right, lower, upper])
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Time (seconds)')
+    plt.tight_layout()  

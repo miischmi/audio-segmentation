@@ -231,5 +231,21 @@ def matches_dtw(pos, D, stepsize=2):
         matches[k, 0] = s
     return matches
     
- 
+def matches_in_seconds(matches, hopsize, Fs, N):
+    """Converts Feature-Positions to seconds
+
+    Args:
+        matches: Array containing matches (start, end)
+    
+    Returns: 
+        matches_sec: Array containing matches in seconds (Start, end)
+    """
+    matches_sec = []
+    for (s,t) in matches:
+        s =  s * hopsize / Fs + (N / Fs) / 2
+        s = '%.2f' % s
+        t = t * hopsize / Fs + (N / Fs) / 2
+        t = '%.2f' % t
+        matches_sec.append([s, t])
+    return print(matches_sec)
 
