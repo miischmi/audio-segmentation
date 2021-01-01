@@ -117,6 +117,7 @@ def plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax, Fs= 1, cmap= 'gray_r'
     plot_matches(ax= ax[1], matches= matches, Delta= Delta, Fs= Fs, s_marker= '', t_marker= 'o')
     ax[1].set_title(r'Matching function $\Delta$')
     ax[1].set_xlabel('Time (samples)')
+    plt.suptitle('Recordings: WAM-20 vs. WAM-21')
 
 def plot_costmatrix(C, Fs= 9600, hopsize = 9600, cmap= 'gray_r'):
     """Plots accumulated cost matrix with optimal warping path

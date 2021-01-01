@@ -7,7 +7,7 @@ from matplotlib import patches
 def compute_cost_matrix(X, Y, metric='euclidean'):
     """Compute the cost matrix of two feature sequences
 
-    Notebook: C3/C3S2_DTWbasic.ipynb
+     From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C3/C3S2_DTWbasic.ipynb
 
     Args:
         X: Sequence 1
@@ -20,6 +20,19 @@ def compute_cost_matrix(X, Y, metric='euclidean'):
     X, Y = np.atleast_2d(X, Y)
     C = scipy.spatial.distance.cdist(X.T, Y.T, metric=metric)
     return C
+
+def cost_matrix_dot(X, Y):
+    """Computes cost matrix via dot product
+
+     From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C7/C7S2_DiagonalMatching.ipynb
+
+    Args:
+        X, Y: Feature seqeuences (given as K x N and K x M matrices)
+
+    Returns:
+        C: cost matrix
+    """
+    return 1 - np.dot(X.T, Y)
 
 def compute_accumulated_cost_matrix_subsequence_dtw(C):
     """Given the cost matrix, compute the accumulated cost matrix for
@@ -84,7 +97,7 @@ def compute_matching_function_dtw(X, Y, stepsize=2):
         C: Cost matrix
         D: Accumulated cost matrix
     """
-    C = compute_cost_matrix(X, Y)
+    C = cost_matrix_dot(X, Y)
     if stepsize == 1:
         D = compute_accumulated_cost_matrix_subsequence_dtw(C)
     if stepsize == 2:

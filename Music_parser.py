@@ -39,8 +39,8 @@ class Music_parser():
             segments_chromagrams.append(librosa.feature.chroma_stft(y= segment, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window))
         return segments_chromagrams
 
-    def compute_one_chromagram(self, music, sample_rate, norm = None, hop_length = 512, n_fft = 2048, window = 'hann'):
-        return librosa.feature.chroma_stft(y= music, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window)
+    def compute_one_chromagram(self, music, sample_rate, norm = None, hop_length = 512, n_fft = 2048, window = 'hann', tuning = None):
+        return librosa.feature.chroma_stft(y= music, sr= sample_rate, norm= norm, hop_length= hop_length, n_fft= n_fft, window = window, tuning= tuning)
 
     def compute_power_db(self, x, sr, win_len_sec=0.1, power_ref=10**(-12)):
         """Computation of the signal power in dB
