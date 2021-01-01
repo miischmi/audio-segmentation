@@ -140,12 +140,9 @@ def compute_CENS_from_chromagrams_seg(segments, Fs= 1, ell=41, d=10, quant= True
     """
     cens_array = []
     for C in segments:
-        C_norm = normalize_feature_sequence(C, norm='1')
-        C_Q = quantize_matrix(C_norm) if quant else C_norm
-        C_smooth, Fs_CENS = CENS_downsampling(C_Q, Fs, filt_len=ell, down_sampling=d, w_type='hann')
-        C_CENS = normalize_feature_sequence(C_smooth, norm='2')
-        cens_array.append({'cens': C_CENS, 'sample rate': Fs_CENS})
-    return cens_array
+        C_CENS, Fs_CENS = compute_CENS_from_chromagram(C, Fs, ell= ell, d= d)
+        cens_array.append(C_CENS)
+    return cens_array, Fs_CENS
 
 def cyclic_shift(C, shift=1):
     """Cyclically shift a chromagram

@@ -3,6 +3,7 @@ import scipy.spatial
 import librosa
 import matplotlib.pyplot as plt
 from matplotlib import patches
+import time
 
 def compute_cost_matrix(X, Y, metric='euclidean'):
     """Compute the cost matrix of two feature sequences
@@ -231,7 +232,7 @@ def matches_dtw(pos, D, stepsize=2):
         matches[k, 0] = s
     return matches
     
-def matches_in_seconds(matches, hopsize, Fs, N):
+def print_formatted_matches(matches, hopsize, Fs, N):
     """Converts Feature-Positions to seconds
 
     Args:
@@ -242,10 +243,8 @@ def matches_in_seconds(matches, hopsize, Fs, N):
     """
     matches_sec = []
     for (s,t) in matches:
-        s =  s * hopsize / Fs + (N / Fs) / 2
-        s = '%.2f' % s
-        t = t * hopsize / Fs + (N / Fs) / 2
-        t = '%.2f' % t
+        s = time.strftime('%H:%M:%S', time.gmtime(s * hopsize / Fs + (N / Fs) / 2))
+        t = time.strftime('%H:%M:%S', time.gmtime(t * hopsize / Fs + (N / Fs) / 2))
         matches_sec.append([s, t])
     return print(matches_sec)
 
