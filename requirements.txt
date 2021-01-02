@@ -1,4 +1,6 @@
 librosa
-pydub
 matplotlib
 scipy
+numpy
+
+

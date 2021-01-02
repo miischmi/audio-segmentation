@@ -1,19 +1,14 @@
 from JSON_Classifier import JSON_Classifier
 from Music_parser import Music_parser
-from Chroma_postprocessing import compute_CENS_from_chromagram
-from Chroma_postprocessing import compute_CENS_from_chromagrams_seg
-from Chroma_postprocessing import cyclic_shift
+import Chroma_postprocessing as chroma
 import Dynamic_Time_Warping as dtw
 import visualization as vis
-from matplotlib.patches import ConnectionPatch
-
-import datetime
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 
-ref_track = 'WAM20_Segm_1-6.wav'
+ref_track = 'WAM20_Segm_16.wav'
 test_track = 'WAM-21__Track1_Channel1.wav'
 
 # Importing audio files
@@ -43,64 +38,24 @@ window = 'hann'
 
 
 
-# Sample properties
-## Compute waveform
-# t_ref = np.arange(ref_recording.shape[0]) / sr
-# t_test = np.arange(test_recording.shape[0]) / sr
-# title_r = 'Waveform, Sample: Reference Recording'
-# title_t = 'Waveform, Sample: Test Recording'
-# vis.plot_waveform(t_ref, ref_recording, title_r)
-# vis.plot_waveform(t_test, test_recording, title_t)
-
-
-
-## Signal power in dB
-# power_db_ref = music_parser.compute_power_db(ref_recording, sr, win_len_sec= 0.2)
-# power_db_test = music_parser.compute_power_db(test_recording, sr, win_len_sec= 0.2)
-# title_r = 'Sound power level over time, Sample:Reference Recording'
-# title_t = 'Sound power level over time, Sample:Test Recording'
-# vis.plot_powerdb(t_ref, power_db_ref, title_r)
-# vis.plot_powerdb(t_test, power_db_test, title_t)
-
-
-
 # Creating each chromagram
 ref_chromagram = music_parser.compute_chromagrams(segment_list, sr, norm= None, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
 test_chromagram = music_parser.compute_one_chromagram(test_recording, sr, norm= None, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
-#  ref_chromagram = music_parser.compute_one_chromagram(ref_recording, sr, norm= None, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
 
 ## key differences --> cyclic_shift
-test_chromagram = cyclic_shift(test_chromagram, shift= 1)
-
-## Example: Normalization Librosa
-# ref_chromagram = music_parser.compute_one_chromagram(ref_recording, sr, norm= 1, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
-# test_chromagram = music_parser.compute_one_chromagram(test_recording, sr, norm= 1, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
-
-## Plot chromagrams
-# title_r = r'$\ell_1$-normalized Chromagram, Sample:Reference Recording'
-# title_t = r'$\ell_1$-normalized Chromagram, Sample:Test Recording'
-# vis.plot_chromagram(ref_chromagram, sr= sr, title= title_r)
-# vis.plot_chromagram(test_chromagram, sr= sr, title= title_t)
+test_chromagram = chroma.cyclic_shift(test_chromagram, shift= 1)
 
 
 
 # Creating each CENS feature based on the chromagrams
 ell = 21
 d = 5
-CENS_refs, fs = compute_CENS_from_chromagrams_seg(ref_chromagram, sr, ell= ell, d= d)
-CENS_test, fs = compute_CENS_from_chromagram(test_chromagram, sr, ell= ell, d= d)
-# CENS_ref, fs = compute_CENS_from_chromagram(ref_chromagram, sr, ell= ell, d= d)
-
-## Plot CENS
-# title_r = r'CENS$^{%d}_{%d}$-feature, Sample:Reference Recording' % (ell, d)
-# title_t = r'CENS$^{%d}_{%d}$-feature, Sample:Test Recording' % (ell, d)
-# vis.plot_CENS(CENS_ref, fs= fs, title= title_r)
-# vis.plot_CENS(CENS_test, fs= fs, title= title_t)
+CENS_refs, fs = chroma.compute_CENS_from_chromagrams_seg(ref_chromagram, sr, ell= ell, d= d)
+CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, sr, ell= ell, d= d)
 
 
 
 # Matching
-# step_size1 = np.array([[1, 0], [0, 1], [1, 1]])
 step_size2 = np.array([[2, 1], [1, 2], [1, 1]])
 for i in range(len(CENS_refs)):
     N = CENS_refs[i].shape[1]
@@ -115,23 +70,8 @@ for i in range(len(CENS_refs)):
     b_ast = D[-1, :].argmin()
     a_ast = P[0, 1]
 
+    print(matches)
     dtw.print_formatted_matches(matches, hopsize, fs, N)
     fig, ax = plt.subplots(2, 1, gridspec_kw={'width_ratios': [1], 'height_ratios': [1, 1]}, figsize=(8, 4), constrained_layout=True)
-
     vis.plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax, ref_track, test_track, i)
     plt.show()
-
-# Singular matching
-# N, M = CENS_ref.shape[1], CENS_test.shape[1]
-# C= dtw.cost_matrix_dot(CENS_ref, CENS_test)
-# D, P = librosa.sequence.dtw(C= C, step_sizes_sigma= step_size2, subseq= True, backtrack= True)
-# P = P[::-1, :]
-# Delta = D[-1, :] / N
-# pos = dtw.mininma_from_matching_function(Delta, rho= N//2, tau= 0.1)
-# matches = dtw.matches_dtw(pos, D, stepsize= 2)
-
-# print(matches)
-# dtw.print_formatted_matches(matches, hopsize, fs, N)
-# fig, ax = plt.subplots(2, 1, gridspec_kw={'width_ratios': [1], 'height_ratios': [1, 1]}, figsize=(8, 4), constrained_layout=True)
-# vis.plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax,  ref_track, test_track, 1)
-# plt.show()
