@@ -239,7 +239,7 @@ def print_formatted_matches(matches, hopsize, Fs, N):
         matches: Array containing matches (start, end)
     
     Returns: 
-        matches_sec: Array containing matches in seconds (Start, end)
+        matches_sec: Array containing matches in timestamps
     """
     matches_sec = []
     for (s,t) in matches:

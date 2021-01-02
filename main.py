@@ -8,7 +8,7 @@ import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 
-ref_track = 'WAM20_Segm_16.wav'
+ref_track = 'WAM20_Segm_1-6.wav'
 test_track = 'WAM-21__Track1_Channel1.wav'
 
 # Importing audio files
