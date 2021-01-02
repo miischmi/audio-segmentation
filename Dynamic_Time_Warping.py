@@ -233,7 +233,7 @@ def matches_dtw(pos, D, stepsize=2):
     return matches
     
 def print_formatted_matches(matches, hopsize, Fs, N):
-    """Converts Feature-Positions to seconds
+    """Converts Feature-Positions to time positions
 
     Args:
         matches: Array containing matches (start, end)
