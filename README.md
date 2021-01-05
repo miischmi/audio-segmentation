@@ -5,26 +5,27 @@ This work contributes to the automatic segmentation of opera recordings in audio
 All data used originates from the Ehrenreich-Collection of the HKB and can be accessed at https://ehrenreich.bfh.science/ (login required).
 
 ## Paper
-The associated paper is in possession of the author (michelle.schmid@students.bfh.ch) and the supervisor (eduard.klein@bfh.ch).
-<br/>
+The associated paper is in possession of the author (michelle.schmid@students.bfh.ch) and the supervisor (eduard.klein@bfh.ch).  
 <br/>
 <br/>
 
+
 # Prerequisites
-Python 3.8
-pip
+- Python 3.8<br/>
+- pip<br/>
+
 The .wav files used in this project are not published. To run the programm, you must provide your own .wav files.
 
 # Segmentation Tool
 All requirements needed to run the program can be found in the file <i>requirements.txt</i>.
-<br/>
-main - This main is used to match the annotated segments of the reference recording with the complete test recording and requires a correspondingly large amount of computing power.
-<br/>
-main_samples - This main is used for experimenting. Different short samples of two recordings can be compared with each other.
+
+*main* - This main is used to match the annotated segments of the reference recording with the complete test recording and requires a correspondingly large amount of computing power.
+
+*main_samples* - This main is used for experimenting. Different short samples of two recordings can be compared with each other.
 
 ## Cyclic shift
 This function shifts a chroma vector by a certain number of semitones. In other words, the chroma band D♯ becomes the chroma band E, the E becomes F and so on, and the last band B becomes C. At the moment, it still has to be deactivated and adjusted manually depending on the key of the recordings to be compared.
 
 # Issues
-Status December 20: Librosa only works with Python version 3.8, see https://discuss.python.org/t/not-able-to-install-package-librosa-using-pip-and-pycharm/5761/2
+**Status December 20:** Librosa only works with Python version 3.8, see https://discuss.python.org/t/not-able-to-install-package-librosa-using-pip-and-pycharm/5761/2
 
