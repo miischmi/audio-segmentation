@@ -31,17 +31,15 @@ window = 'hann'
 center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=0.0)
 signal1 = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', center_freqs= center_freqs, sample_rates = sample_rates)
 
-results =np.array([])
-for start in range(1):
-   new_array = np.empty((0,12))
+result = []
+for start in range(12):
    for i in range(start, len(signal1), 12):
-      new_array = np.append(new_array, signal1[i,], axis=1)
-      print(new_array.shape)
-   new_array = np.sum(new_array, axis=0)
-   print('nöööiii:' , new_array)
-   results = np.append(results, new_array)
-print(len(results))
-print(results.shape)
+      if i == start:
+         new_array = signal1[start]
+      else:
+         new_array = np.add(new_array, signal1[i])
+   result.append(new_array)
+print(np.shape(result))
 
 # Sample properties
 ## Compute waveform
