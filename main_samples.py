@@ -7,6 +7,7 @@ import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import signal
 
 ref_track = 'WAM20_20sek.wav'
 test_track = 'WAM21_30sek.wav'
@@ -26,6 +27,21 @@ hopsize = 4800
 window = 'hann'
 
 
+# Filter through filterbank
+center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=0.0)
+signal1 = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', center_freqs= center_freqs, sample_rates = sample_rates)
+
+results =np.array([])
+for start in range(1):
+   new_array = np.empty((0,12))
+   for i in range(start, len(signal1), 12):
+      new_array = np.append(new_array, signal1[i,], axis=1)
+      print(new_array.shape)
+   new_array = np.sum(new_array, axis=0)
+   print('nöööiii:' , new_array)
+   results = np.append(results, new_array)
+print(len(results))
+print(results.shape)
 
 # Sample properties
 ## Compute waveform
