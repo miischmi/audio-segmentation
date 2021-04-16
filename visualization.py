@@ -67,7 +67,7 @@ def plot_CENS(cens, fs= 48000, hopsize= 4800, title= None, cmap = 'gray_r', clim
         cmap: colormapping
         clim: colorbar size
     """      
-    plt.figure(figsize=(7.5, 5))
+    plt.figure(figsize=(15, 5))
     librosa.display.specshow(cens , x_axis='time', y_axis='chroma', sr= fs, hop_length= hopsize, cmap= cmap, clim= clim )
     plt.title(title)
     plt.xlabel('Time (seconds)')
