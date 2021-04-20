@@ -14,16 +14,15 @@ def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs)
     norm = kwargs.get('norm', None)
     if stft:
         window = kwargs.get('window', None)
-        return music_parser.compute_one_chromagram(ref_recording, sr, norm=norm, hop_length=hopsize, n_fft=frame_length, window=window, tuning=tuning)
+        return music_parser.compute_one_chromagram(recording, sr, norm=norm, hop_length=hopsize, n_fft=frame_length, window=window, tuning=tuning)
     else:
         herz = kwargs.get('herz', 21)
         flayout = kwargs.get('flayout', 'sos')
         bins_per_octave = kwargs.get('bins_per_octave', 12)
         n_octaves = kwargs.get('n_octaves', 7)
         center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=tuning)
-        time_freq = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
+        time_freq = librosa.iirt(recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
         return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(herz), norm=norm)
-
 
 ref_track = 'WAM20_20sek.wav'
 test_track = 'WAM79_2min.wav'
@@ -37,9 +36,6 @@ test_recording, sr = music_parser.readMusicFile(f'assets/{test_track}')
 # Feature Extraction/Definition
 ref_length = librosa.get_duration(ref_recording, sr= sr)
 test_length = librosa.get_duration(test_recording, sr = sr)
-frame_length = 9600
-hopsize = 4800
-window = 'hann'
 
 # Sample properties
 ## Compute waveform
@@ -58,29 +54,29 @@ window = 'hann'
 # vis.plot_powerdb(t_ref, power_db_ref, title_r)
 # vis.plot_powerdb(t_test, power_db_test, title_t)
 
-
-
-
-
-## Filterbank-Method
-center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=0.0)
-
 ##STFT vs IIRT Visualization
 # D = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', center_freqs= center_freqs, sample_rates = sample_rates)
 # C = librosa.stft(ref_recording, n_fft= frame_length, hop_length= hopsize, window= window, center = True, pad_mode = 'constant')
 # vis.plot_STFT_vs_IIRT(D, C, sr, hopsize)
 # plt.show()
 
-#new Parameters
-sr= 22050
-frame_length = 4410
-hopsize = int(frame_length/2)          
-window = 'hann'
 
 # Non stft
+ell = 41
+d = 10
+frame_length = 9600
+hopsize = 4800
+window = 'hann'
 ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize)
 test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
+
 # stft
+# sr= 22050
+# frame_length = 4410
+# hopsize = int(frame_length/2)          
+# window = 'hann'
+# ell = 21
+# d = 5
 # ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize, stft=True, window=window)
 # test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize, stft=True, window=window)
 
@@ -89,8 +85,6 @@ test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
 # test_filtered = chroma.cyclic_shift(test_filtered, shift= 1)
 
 # Creating each CENS feature based on the Filterbank-chromagrams
-ell = 41
-d = 10
 CENS_ref, fs = chroma.compute_CENS_from_chromagram(ref_chromagram, Fs=sr, ell= ell, d= d)
 CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell= ell, d= d)
 
@@ -110,8 +104,7 @@ CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell=
 # vis.plot_chromagram(test_chromagram, sr= sr, title= title_t)
 
 # Creating each CENS feature based on the STFT-chromagrams
-# ell = 21
-# d = 5
+
 # CENS_ref, fs = chroma.compute_CENS_from_chromagram(ref_chromagram, Fs=sr, ell= ell, d= d)
 # CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell= ell, d= d)
 
