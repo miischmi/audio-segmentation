@@ -36,6 +36,9 @@ test_recording, sr = music_parser.readMusicFile(f'assets/{test_track}')
 # Feature Extraction/Definition
 ref_length = librosa.get_duration(ref_recording, sr= sr)
 test_length = librosa.get_duration(test_recording, sr = sr)
+frame_length = 9600
+hopsize = int(frame_length/2)
+window = 'hann'
 
 # Sample properties
 ## Compute waveform
@@ -64,17 +67,12 @@ test_length = librosa.get_duration(test_recording, sr = sr)
 # Non stft
 ell = 41
 d = 10
-frame_length = 9600
-hopsize = 4800
-window = 'hann'
 ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize)
 test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
+sr= 22050
+frame_length = 4410
 
 # stft
-# sr= 22050
-# frame_length = 4410
-# hopsize = int(frame_length/2)          
-# window = 'hann'
 # ell = 21
 # d = 5
 # ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize, stft=True, window=window)
