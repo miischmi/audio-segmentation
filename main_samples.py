@@ -101,10 +101,6 @@ CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell=
 # vis.plot_chromagram(ref_chromagram, sr= sr, title= title_r)
 # vis.plot_chromagram(test_chromagram, sr= sr, title= title_t)
 
-# Creating each CENS feature based on the STFT-chromagrams
-
-# CENS_ref, fs = chroma.compute_CENS_from_chromagram(ref_chromagram, Fs=sr, ell= ell, d= d)
-# CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell= ell, d= d)
 
 ## Plot CENS
 # title_r = r'CENS$^{%d}_{%d}$-feature, Sample:Reference Recording' % (ell, d)
