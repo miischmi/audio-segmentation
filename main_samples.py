@@ -16,13 +16,13 @@ def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs)
         window = kwargs.get('window', None)
         return music_parser.compute_one_chromagram(recording, sr, norm=norm, hop_length=hopsize, n_fft=frame_length, window=window, tuning=tuning)
     else:
-        herz = kwargs.get('herz', 21)
+        midi = kwargs.get('herz', 21)
         flayout = kwargs.get('flayout', 'sos')
         bins_per_octave = kwargs.get('bins_per_octave', 12)
         n_octaves = kwargs.get('n_octaves', 7)
         center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=tuning)
         time_freq = librosa.iirt(recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
-        return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(herz), norm=norm)
+        return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(midi), norm=norm)
 
 ref_track = 'WAM20_20sek.wav'
 test_track = 'WAM79_2min.wav'
@@ -71,6 +71,7 @@ ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize)
 test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
 sr= 22050
 frame_length = 4410
+hopsize = int(frame_length/2)
 
 # stft
 # ell = 21
@@ -107,9 +108,6 @@ CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell=
 # title_t = r'CENS$^{%d}_{%d}$-feature, Sample:Test Recording' % (ell, d)
 # vis.plot_CENS(CENS_ref, fs= 4800, title= title_r)
 # vis.plot_CENS(CENS_test, fs= 4800, title= title_t)
-
-
-
 
 # Matching
 # step_size1 = np.array([[1, 0], [0, 1], [1, 1]])
