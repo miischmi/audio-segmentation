@@ -138,3 +138,20 @@ def plot_costmatrix(C, Fs= 9600, hopsize = 9600, cmap= 'gray_r'):
     plt.xlabel('Time (seconds)')
     plt.ylabel('Time (seconds)')
     plt.tight_layout()  
+
+def plot_STFT_vs_IIRT(D, C, sr, hopsize, yaxis= 'cqt_hz', xaxis= 'time', cmap= 'gray_r'):
+    '''
+    D = STFT transformiertes Signal
+    C = IIRT transformiertes Signal
+    sr = sampling rate
+    hopsize = Hop Size
+    yaxis = gem. Librosa specshow
+    xaxis = gem. Librosa specshow
+    '''
+    fig, ax = plt.subplots(nrows=2, sharex=True, sharey=True)
+    img = librosa.display.specshow(librosa.amplitude_to_db(C, ref=np.max),sr=sr, hop_length=hopsize, y_axis= 'log', x_axis= xaxis, ax=ax[0], cmap= cmap)
+    ax[0].set(title='Short-time Fourier Transform (stft)')
+    ax[0].label_outer()
+    img = librosa.display.specshow(librosa.amplitude_to_db(D, ref=np.max), sr=sr, hop_length=hopsize, y_axis= yaxis, x_axis= xaxis, ax=ax[1], cmap= cmap)
+    ax[1].set_title('Semitone spectrogram (iirt)')
+    fig.colorbar(img, ax=ax, format="%+2.0f dB")
