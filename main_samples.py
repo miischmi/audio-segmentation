@@ -9,6 +9,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
 
+def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs):
+    tuning = kwargs.get('tuning', 0)
+    norm = kwargs.get('norm', None)
+    if stft:
+        window = kwargs.get('window', None)
+        return music_parser.compute_one_chromagram(ref_recording, sr, norm=norm, hop_length=hopsize, n_fft=frame_length, window=window, tuning=tuning)
+    else:
+        herz = kwargs.get('herz', 21)
+        flayout = kwargs.get('flayout', 'sos')
+        bins_per_octave = kwargs.get('bins_per_octave', 12)
+        n_octaves = kwargs.get('n_octaves', 7)
+        center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=tuning)
+        time_freq = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
+        return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(herz), norm=norm)
+
+
 ref_track = 'WAM20_20sek.wav'
 test_track = 'WAM79_2min.wav'
 
@@ -55,17 +71,19 @@ center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=0.0)
 # vis.plot_STFT_vs_IIRT(D, C, sr, hopsize)
 # plt.show()
 
-# Filter through filterbank
-ref_filtered = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', center_freqs= center_freqs, sample_rates = sample_rates)
-ref_filtered = librosa.feature.chroma_cqt(C=ref_filtered, bins_per_octave=12, n_octaves=7, fmin=librosa.midi_to_hz(21), norm=None)
-test_filtered = librosa.iirt(test_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', center_freqs= center_freqs, sample_rates = sample_rates)
-test_filtered = librosa.feature.chroma_cqt(C=test_filtered, bins_per_octave=12, n_octaves=7, fmin=librosa.midi_to_hz(21), norm=None)
-
 #new Parameters
 sr= 22050
 frame_length = 4410
 hopsize = int(frame_length/2)          
 window = 'hann'
+
+# Non stft
+ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize)
+test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
+# stft
+# ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize, stft=True, window=window)
+# test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize, stft=True, window=window)
+
 
 ## key differences --> cyclic_shift
 # test_filtered = chroma.cyclic_shift(test_filtered, shift= 1)
@@ -73,22 +91,14 @@ window = 'hann'
 # Creating each CENS feature based on the Filterbank-chromagrams
 ell = 41
 d = 10
-CENS_ref, fs = chroma.compute_CENS_from_chromagram(ref_filtered, Fs=sr, ell= ell, d= d)
-CENS_test, fs = chroma.compute_CENS_from_chromagram(test_filtered, Fs=sr, ell= ell, d= d)
+CENS_ref, fs = chroma.compute_CENS_from_chromagram(ref_chromagram, Fs=sr, ell= ell, d= d)
+CENS_test, fs = chroma.compute_CENS_from_chromagram(test_chromagram, Fs=sr, ell= ell, d= d)
 
 ## Plot CENS
 # title_r = r'CENS$^{%d}_{%d}$-feature, Sample:Reference Recording' % (ell, d)
 # title_t = r'CENS$^{%d}_{%d}$-feature, Sample:Test Recording' % (ell, d)
 # vis.plot_CENS(CENS_ref, fs= 4800, title= title_r)
 # vis.plot_CENS(CENS_test, fs= 4800, title= title_t)
-
-
-
-
-##STFT Method
-# Chreating each chromagram
-# ref_chromagram = music_parser.compute_one_chromagram(ref_recording, sr, norm= None, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
-# test_chromagram = music_parser.compute_one_chromagram(test_recording, sr, norm= None, hop_length= hopsize, n_fft= frame_length, window = window, tuning= 0)
 
 ## key differences --> cyclic_shift
 # test_chromagram = chroma.cyclic_shift(test_chromagram, shift= 1)
