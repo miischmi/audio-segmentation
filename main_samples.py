@@ -8,6 +8,8 @@ import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
+import test as t
+import libfmp.b
 
 def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs):
     tuning = kwargs.get('tuning', 0)
@@ -24,13 +26,14 @@ def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs)
         time_freq = librosa.iirt(recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
         return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(midi), norm=norm)
 
-ref_track = 'WAM20_20sek.wav'
+ref_track = 'WAM-21_leerlauf.wav'
 test_track = 'WAM79_2min.wav'
 
 # Importing audio files
 music_parser = Music_parser()
 ref_recording, sr = music_parser.readMusicFile(f'assets/{ref_track}')
 test_recording, sr = music_parser.readMusicFile(f'assets/{test_track}')
+
 
 
 # Feature Extraction/Definition
@@ -65,19 +68,51 @@ window = 'hann'
 
 
 # Non stft
-ell = 41
-d = 10
-ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize)
-test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
-sr= 22050
-frame_length = 4410
-hopsize = int(frame_length/2)
+# ell = 41
+# d = 10
+# ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize)
+# test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize)
+# sr= 22050
+# frame_length = 4410
+# hopsize = int(frame_length/2)
 
 # stft
 # ell = 21
 # d = 5
 # ref_chromagram = get_chromagram(ref_recording, sr, frame_length, hopsize, stft=True, window=window)
 # test_chromagram = get_chromagram(test_recording, sr, frame_length, hopsize, stft=True, window=window)
+
+
+
+#Onset detection
+center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=0.0)
+ref_filtered = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', center_freqs=center_freqs, sample_rates=sample_rates)
+
+sr= 22050
+frame_length = 4410
+hopsize = int(frame_length/2)
+
+nov, Fs_nov = t.compute_novelty_spectrum(ref_filtered, Fs=sr, N= frame_length, H= hopsize, gamma=10)
+peaks, properties = signal.find_peaks(nov, prominence=0.02)
+T_coef = np.arange(nov.shape[0]) / Fs_nov
+peaks_sec = T_coef[peaks]
+# fig, ax, line = libfmp.b.plot_signal(nov, Fs_nov, color='k', title='Novelty function with detected peaks')
+# plt.plot(peaks_sec, nov[peaks], 'ro')
+# plt.show()
+
+start_sec= peaks_sec[0]
+start_feat = int((start_sec-1)*48000)
+end_sec = peaks_sec[len(peaks_sec)-1]
+end_feat = int((end_sec+1)*48000)
+cut_recording = ref_recording[start_feat:end_feat]
+
+print(len(cut_recording))
+
+
+
+
+
+
 
 
 ## key differences --> cyclic_shift
