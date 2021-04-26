@@ -1,5 +1,6 @@
 import numpy as np
 import librosa
+import Music_parser as music_parser
 
 def compute_local_average(x, M):
     """Compute local average of signal
@@ -56,5 +57,17 @@ def compute_novelty_spectrum(x, Fs=1, N=1024, H=256, gamma=100, M=10, norm=1):
             novelty_spectrum = novelty_spectrum / max_value
     return novelty_spectrum, Fs_feature
 
-
-    
+def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs):
+    tuning = kwargs.get('tuning', 0)
+    norm = kwargs.get('norm', None)
+    if stft:
+        window = kwargs.get('window', None)
+        return music_parser.compute_one_chromagram(recording, sr, norm=norm, hop_length=hopsize, n_fft=frame_length, window=window, tuning=tuning)
+    else:
+        midi = kwargs.get('herz', 21)
+        flayout = kwargs.get('flayout', 'sos')
+        bins_per_octave = kwargs.get('bins_per_octave', 12)
+        n_octaves = kwargs.get('n_octaves', 7)
+        center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=tuning)
+        time_freq = librosa.iirt(recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
+        return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(midi), norm=norm)

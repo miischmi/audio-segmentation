@@ -155,3 +155,56 @@ def plot_STFT_vs_IIRT(D, C, sr, hopsize, yaxis= 'cqt_hz', xaxis= 'time', cmap= '
     img = librosa.display.specshow(librosa.amplitude_to_db(D, ref=np.max), sr=sr, hop_length=hopsize, y_axis= yaxis, x_axis= xaxis, ax=ax[1], cmap= cmap)
     ax[1].set_title('Semitone spectrogram (iirt)')
     fig.colorbar(img, ax=ax, format="%+2.0f dB")
+
+def plot_signal(x, Fs=1, T_coef=None, ax=None, figsize=(6, 2), xlabel='Time (seconds)', ylabel='', title='', dpi=72,
+                ylim=True, **kwargs):
+    """Plot a signal, e.g. a waveform or a novelty function
+
+    Notebook: B/B_PythonVisualization.ipynb
+
+    Args:
+        x: Input signal
+        Fs: Sample rate
+        T_coef: Time coeffients. If None, will be computed, based on Fs.
+        ax: The Axes instance to plot on. If None, will create a figure and axes.
+        figsize: Width, height in inches
+        xlabel: Label for x axis
+        ylabel: Label for y axis
+        title: Title for plot
+        dpi: Dots per inch
+        ylim: True or False (auto adjust ylim or nnot) or tuple with actual ylim
+        **kwargs: Keyword arguments for matplotlib.pyplot.plot
+
+    Returns:
+        fig: The created matplotlib figure or None if ax was given.
+        ax: The used axes.
+        line: The line plot
+    """
+    fig = None
+    if ax is None:
+        fig = plt.figure(figsize=figsize, dpi=dpi)
+        ax = plt.subplot(1, 1, 1)
+    if T_coef is None:
+        T_coef = np.arange(x.shape[0]) / Fs
+
+    if 'color' not in kwargs:
+        kwargs['color'] = 'gray'
+
+    line = ax.plot(T_coef, x, **kwargs)
+
+    ax.set_xlim([T_coef[0], T_coef[-1]])
+    if ylim is True:
+        ylim_x = x[np.isfinite(x)]
+        x_min, x_max = ylim_x.min(), ylim_x.max()
+        if x_max == x_min:
+            x_max = x_max + 1
+        ax.set_ylim([min(1.1 * x_min, 0.9 * x_min), max(1.1 * x_max, 0.9 * x_max)])
+    elif ylim not in [True, False, None]:
+        ax.set_ylim(ylim)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    if fig is not None:
+        plt.tight_layout()
+
+    return fig, ax, line
