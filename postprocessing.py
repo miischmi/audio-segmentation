@@ -150,10 +150,11 @@ def cyclic_shift(C, shift=1):
     Notebook: C3/C3S1_TranspositionTuning.ipynb
 
     Args:
-        C: Chromagram
-        shift: Number cyclic shifts
+        C (np.ndarray): Chromagram
+        shift (int): Tranposition shift (Default value = 1)
+
     Returns:
-        C_shift: Cyclically shifted chromagram
-    """        
+        C_shift (np.ndarray): Cyclically shifted chromagram
+    """
     C_shift = np.roll(C, shift=shift, axis=0)
     return C_shift
