@@ -160,7 +160,7 @@ def plot_signal(x, Fs=1, T_coef=None, ax=None, figsize=(6, 2), xlabel='Time (sec
                 ylim=True, **kwargs):
     """Plot a signal, e.g. a waveform or a novelty function
 
-    Notebook: B/B_PythonVisualization.ipynb
+    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: B/B_PythonVisualization.ipynb
 
     Args:
         x: Input signal

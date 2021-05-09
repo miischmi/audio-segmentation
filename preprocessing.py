@@ -8,7 +8,7 @@ from scipy.interpolate import interp1d
 def compute_local_average(x, M):
     """Compute local average of signal
 
-    Notebook: C6/C6S1_NoveltySpectral.ipynb
+    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C6/C6S1_NoveltySpectral.ipynb
 
     Args:
         x: Signal
@@ -28,7 +28,7 @@ def compute_local_average(x, M):
 def compute_novelty_spectrum(x, Fs=1, N=1024, H=256, gamma=100, M=10, norm=1):
     """Compute spectral-based novelty function
 
-    Notebook: C6/C6S1_NoveltySpectral.ipynb
+    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C6/C6S1_NoveltySpectral.ipynb
 
     Args:
         x: Signal
@@ -75,32 +75,10 @@ def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs)
         time_freq = librosa.iirt(recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = flayout, center_freqs=center_freqs, sample_rates=sample_rates)
         return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(midi), norm=norm)
 
-
-
-def get_chord_labels(ext_minor='m', nonchord=False):
-    """Generate chord labels for major and minor triads (and possibly nonchord label)
-
-    Notebook: C5/C5S2_ChordRec_Templates.ipynb
-
-    Args:
-        ext_minor (str): Extension for minor chords (Default value = 'm')
-        nonchord (bool): If "True" then add nonchord label (Default value = False)
-
-    Returns:
-        chord_labels (list): List of chord labels
-    """
-    chroma_labels = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    chord_labels_maj = chroma_labels
-    chord_labels_min = [s + ext_minor for s in chroma_labels]
-    chord_labels = chord_labels_maj + chord_labels_min
-    if nonchord is True:
-        chord_labels = chord_labels + ['N']
-    return chord_labels
-
 def generate_chord_templates(nonchord=False):
-    """Generate chord templates of major and minor triads (and possibly nonchord)
+    """Generate chord templates of major triads (and possibly nonchord)
 
-    Notebook: C5/C5S2_ChordRec_Templates.ipynb
+    Adapted from: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C5/C5S2_ChordRec_Templates.ipynb
 
     Args:
         nonchord (bool): If "True" then add nonchord template (Default value = False)
@@ -109,25 +87,21 @@ def generate_chord_templates(nonchord=False):
         chord_templates (np.ndarray): Matrix containing chord_templates as columns
     """
     template_cmaj = np.array([1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]).T   
-    # template_cmin = np.array([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0]).T
     num_chord = 12
     if nonchord:
         num_chord = 13
     chord_templates = np.ones((12, num_chord))
     for shift in range(12):
         chord_templates[:, shift] = np.roll(template_cmaj, shift)
-        # chord_templates[:, shift+12] = np.roll(template_cmin, shift)
     return chord_templates
 
-def chord_recognition_template(X, norm_sim='1', nonchord=False):
-    """Conducts template-based chord recognition
-    with major and minor triads (and possibly nonchord)
+def chord_recognition_template(X, nonchord=False):
+    """Conducts template-based chord recognition with major triads (and possibly nonchord)
 
-    Notebook: C5/C5S2_ChordRec_Templates.ipynb
+    Adapted from: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C5/C5S2_ChordRec_Templates.ipynb
 
     Args:
         X (np.ndarray): Chromagram
-        norm_sim (str): Specifies norm used for normalizing chord similarity matrix (Default value = '1')
         nonchord (bool): If "True" then add nonchord template (Default value = False)
 
     Returns:
@@ -135,12 +109,7 @@ def chord_recognition_template(X, norm_sim='1', nonchord=False):
         chord_max (np.ndarray): Binarized chord similarity matrix only containing maximizing chord
     """
     chord_templates = generate_chord_templates(nonchord=nonchord)
-    # X_norm = post.normalize_feature_sequence(X, norm='2')
-    # chord_templates_norm = post.normalize_feature_sequence(chord_templates, norm='2')
     chord_sim = np.matmul(chord_templates.T, X)
-    # if norm_sim is not None:
-    #     chord_sim = post.normalize_feature_sequence(chord_sim, norm=norm_sim)
-    # chord_max = (chord_sim == chord_sim.max(axis=0)).astype(int)
     chord_max_index = np.argmax(chord_sim, axis=0)
     chord_max = np.zeros(chord_sim.shape).astype(np.int32)
     chord_max[chord_max_index] = 1

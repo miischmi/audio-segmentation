@@ -147,7 +147,7 @@ def compute_CENS_from_chromagrams_seg(segments, Fs= 1, ell=41, d=10, quant= True
 def cyclic_shift(C, shift=1):
     """Cyclically shift a chromagram
 
-    Notebook: C3/C3S1_TranspositionTuning.ipynb
+    From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C3/C3S1_TranspositionTuning.ipynb
 
     Args:
         C (np.ndarray): Chromagram
