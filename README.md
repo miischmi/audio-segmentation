@@ -5,7 +5,10 @@ This work contributes to the automatic segmentation of opera recordings in audio
 All data used originates from the Ehrenreich-Collection of the HKB and can be accessed at https://ehrenreich.bfh.science/ (login required).
 
 ## Paper
-The associated paper is in possession of the author (michelle.schmid@students.bfh.ch) and the supervisor (eduard.klein@bfh.ch).  
+The associated papers
+- Automated Segmentation in Audio Analysis in the Ehrenreich Collection (2020)
+- Optimizing Feature Representations for Automated Segmentation within the Ehrenreich Collection (2021)
+ are in possession of the author (michelle.schmid@students.bfh.ch) and the supervisor (eduard.klein@bfh.ch).  
 <br/>
 <br/>
 
@@ -27,5 +30,5 @@ All requirements needed to run the program can be found in the file <i>requireme
 This function shifts a chroma vector by a certain number of semitones. In other words, the chroma band D♯ becomes the chroma band E, the E becomes F and so on, and the last band B becomes C. At the moment, it still has to be deactivated and adjusted manually depending on the key of the recordings to be compared.
 
 # Issues
-**Status December 20:** Librosa only works with Python version 3.8, see https://discuss.python.org/t/not-able-to-install-package-librosa-using-pip-and-pycharm/5761/2
+**Status May 21:** Librosa still only works with Python version 3.8, see https://discuss.python.org/t/not-able-to-install-package-librosa-using-pip-and-pycharm/5761/2
 

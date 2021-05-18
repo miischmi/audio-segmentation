@@ -1,18 +1,19 @@
 from JSON_Classifier import JSON_Classifier
-from Music_parser import Music_parser
-import Chroma_postprocessing as chroma
+import Music_parser as music_parser
+import postprocessing as chroma
 import Dynamic_Time_Warping as dtw
 import visualization as vis
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
+import datetime
 
+begin_time = datetime.datetime.now()
 ref_track = 'WAM20_Segm_1-6.wav'
 test_track = 'WAM-21__Track1_Channel1.wav'
 
 # Importing audio files
-music_parser = Music_parser()
 ref_recording, sr = music_parser.readMusicFile(f'assets/{ref_track}')
 test_recording, sr = music_parser.readMusicFile(f'assets/{test_track}')
 
@@ -66,12 +67,25 @@ for i in range(len(CENS_refs)):
     pos = dtw.mininma_from_matching_function(Delta, rho= N//2, tau= 0.1, num= 3)
     matches = dtw.matches_dtw(pos, D, stepsize= 2)
 
-    # Indices
-    b_ast = D[-1, :].argmin()
-    a_ast = P[0, 1]
+    # Indices (same as matches, but in seconds)
+    b_ast = round(D[-1, :].argmin() * hopsize / fs + (N / fs) / 2)
+    a_ast = round(P[0, 1] * hopsize / fs + (N / fs) / 2)
+    sta_ref= meta_data.segments[i]['start']
+    end_ref= meta_data.segments[i]['ende']
 
-    print(matches)
+    #Jaccard Index
+    jaccard= chroma.relativeOverlap(a_ast, b_ast, sta_ref, end_ref)
+    
+    print('-'*100)
+    print('\nSegment ', i+1)
+    print('\tJaccard Index: ', jaccard)
+    print('\tDTW distance DTW(CENS_ref, CENS_test):',D[-1, -1])
+    print('\tMatches (features):', matches)
     dtw.print_formatted_matches(matches, hopsize, fs, N)
+    print('\tMatches (seconds): [['+ a_ast + ', '+ b_ast + ']]')
+    print('\tQuery (seconds): ['+sta_ref + ', ' + end_ref + ']]')
     fig, ax = plt.subplots(2, 1, gridspec_kw={'width_ratios': [1], 'height_ratios': [1, 1]}, figsize=(8, 4), constrained_layout=True)
     vis.plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax, ref_track, test_track, i)
-    plt.show()
+    plt.savefig('/mnt/smb.hdd.rbd/W/opera4ever/Schmid/STFT_Matching_segment'+ str(i+1)+'.png')
+print('-'*100)
+print('Skriptdauer: ', datetime.datetime.now() - begin_time)

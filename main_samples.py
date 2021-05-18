@@ -13,7 +13,7 @@ import preprocessing as pre
 print('\033[1m' + 'Debugging Prints' + '\033[0m')
 
 ref_track = 'WAM20_20sek.wav'
-test_track = 'WAM-21_leerlauf.wav'
+test_track = 'WAM21_30sek.wav'
 
 #Importing audio files
 ref_recording, sr = music_parser.readMusicFile(f'assets/{ref_track}')
@@ -59,8 +59,8 @@ print('Recording successfully imported and parameters extracted')
 
 ##Onset detection
 center_freqs, sample_rates = music_parser.mr_frequencies_A0(tuning=0.0)
-ref_filtered = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', tuning= ref_tuning, center_freqs=center_freqs, sample_rates=sample_rates)
-test_filtered = librosa.iirt(test_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', tuning=test_tuning, center_freqs=center_freqs, sample_rates=sample_rates)
+# ref_filtered = librosa.iirt(ref_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', tuning= ref_tuning, center_freqs=center_freqs, sample_rates=sample_rates)
+test_filtered = librosa.iirt(test_recording, sr=sr, win_length= frame_length, hop_length= hopsize, flayout = 'sos', tuning= test_tuning, center_freqs=center_freqs, sample_rates=sample_rates)
 
 #new Parameters
 fs= 22050
@@ -68,35 +68,42 @@ fs_frame_length = 4410
 fs_hopsize = int(fs_frame_length/2)
 
 #Compute novelty spectrum
-ref_nov, ref_Fs_nov = pre.compute_novelty_spectrum(ref_filtered, Fs=fs, N= fs_frame_length, H= fs_hopsize, gamma=10)
+# ref_nov, ref_Fs_nov = pre.compute_novelty_spectrum(ref_filtered, Fs=fs, N= fs_frame_length, H= fs_hopsize, gamma=10)
 test_nov, test_Fs_nov = pre.compute_novelty_spectrum(test_filtered, Fs=fs, N= fs_frame_length, H= fs_hopsize, gamma=10)
 
 #get Peaks
-ref_peaks, ref_properties = signal.find_peaks(ref_nov, prominence=0.02)
+# ref_peaks, ref_properties = signal.find_peaks(ref_nov, prominence=0.02)
 test_peaks, test_properties = signal.find_peaks(test_nov, prominence=0.02)
-ref_T_coef = np.arange(ref_nov.shape[0]) / ref_Fs_nov
+# ref_T_coef = np.arange(ref_nov.shape[0]) / ref_Fs_nov
 test_T_coef = np.arange(test_nov.shape[0]) / test_Fs_nov
-ref_peaks_sec = ref_T_coef[ref_peaks]
+# ref_peaks_sec = ref_T_coef[ref_peaks]
 test_peaks_sec = test_T_coef[test_peaks]
 
 # #Plot Novelty Function + Peaks
 # fig, ax, line = vis.plot_signal(test_nov, test_Fs_nov, color='k', title='Novelty function with detected peaks based on a filter bank + STMSP-transformed signal')
 # plt.plot(test_peaks_sec, test_nov[test_peaks], 'ro')
+
+# fig, ax, line = vis.plot_signal(ref_nov, ref_Fs_nov, color='k', title='Novelty function with detected peaks based on a filter bank + STMSP-transformed signal')
+# plt.plot(ref_peaks_sec, ref_nov[ref_peaks], 'ro')
 # plt.show()
 
 #Use peaks to "cut" the recording
-ref_start_sec= ref_peaks_sec[0]
-if ref_start_sec > 1:
-    ref_start_sec-=1
-ref_start_feat = int(ref_start_sec*sr)
-ref_end_sec = ref_peaks_sec[len(ref_peaks_sec)-1]
-if ref_end_sec < ref_length-1:
-    ref_end_sec+=1
-ref_end_feat = int(ref_end_sec*sr)
-ref_cut_recording = ref_recording[ref_start_feat:ref_end_feat]
+# ref_start_sec= ref_peaks_sec[0]
+# if ref_start_sec < 1:
+#     ref_start_sec = 0
+# elif ref_start_sec > 1:
+#     ref_start_sec-=1
+# ref_start_feat = int(ref_start_sec*sr)
+# ref_end_sec = ref_peaks_sec[len(ref_peaks_sec)-1]
+# if ref_end_sec < ref_length-1:
+#     ref_end_sec+=1
+# ref_end_feat = int(ref_end_sec*sr)
+# ref_cut_recording = ref_recording[ref_start_feat:ref_end_feat]
 
 test_start_sec= test_peaks_sec[0]
-if test_start_sec > 1:
+if test_start_sec < 1:
+    test_start_sec = 0
+elif test_start_sec > 1:
     test_start_sec-=1
 test_start_feat = int(test_start_sec*sr)
 test_end_sec = test_peaks_sec[len(test_peaks_sec)-1]
@@ -112,8 +119,8 @@ print('Onset detection successfully performed')
 #IIRT
 ell = 41
 d = 10
-ref_chromagram = pre.get_chromagram(ref_cut_recording, sr, frame_length, hopsize)
-test_chromagram = pre.get_chromagram(test_cut_recording, sr, frame_length, hopsize)
+ref_chromagram = pre.get_chromagram(ref_recording, sr, frame_length, hopsize, tuning= ref_tuning)
+test_chromagram = pre.get_chromagram(test_cut_recording, sr, frame_length, hopsize, tuning= test_tuning)
 
 # #STFT
 # ell = 21
@@ -161,27 +168,40 @@ testindex= list(test_key.keys()).index(testmax)
 
 #Perform shift if necessary
 shift = 0
+newkey= None
 if refmax != testmax:
     if  refindex > testindex:
         #key differences --> cyclic_shift
         shift= refindex-testindex
         test_chromagram = post.cyclic_shift(test_chromagram, shift= shift) 
+        test_chord_max = post.cyclic_shift(test_chord_max, shift=shift)
 
     if refindex < testindex:
         #key differences --> cyclic_shift
         shift= 12-(testindex-refindex)
         test_chromagram = post.cyclic_shift(test_chromagram, shift= shift)
+        test_chord_max = post.cyclic_shift(test_chord_max, shift=shift)
+    new_key={}
+    for label in range(0, len(labels)):
+        new_key.update({labels[label]:test_chord_max[label]})
+    newkey=str(max(new_key, key=new_key.get))
 
 # #Plot key as barplot
 # ref_bar_key= ref_key.keys()
 # ref_bar_value= ref_key.values()
-
-# test_bar_key= test_key.keys()
 # test_bar_value= test_key.values()
 
-# plt.bar(ref_bar_key, ref_bar_value)
-# plt.bar(test_bar_key, test_bar_value)
-# plt.title("Estimated Key " + ref_track + 'x, ' + test_track )
+# fig = plt.subplots(figsize=(7, 5))
+# if refmax != testmax:
+#     plt.bar(ref_bar_key, ref_bar_value)
+#     plt.bar(ref_bar_key, test_bar_value)
+# else:
+#     barWidth = 0.25
+#     barlen= np.arange(len(ref_bar_key))
+#     plt.bar(barlen, ref_bar_value, width=barWidth)
+#     plt.bar([x + barWidth for x in barlen], test_bar_value, width=barWidth)
+#     plt.xticks([r for r in range(len(ref_bar_key))], labels)
+# plt.title("Estimated Key " + ref_track + ', ' + test_track )
 # plt.legend([ref_track, test_track])
 # plt.tight_layout()
 # plt.show()
@@ -205,13 +225,16 @@ print('CENS creation successfully performed')
 ##Console print 
 print('-'*100)
 print('\033[1m' + 'Reference Recording '+ ref_track + '\033[0m')
-print('Onset start:', ref_start_sec, '\nOnset end:', ref_end_sec, '\nRecording duration in seconds:', len(ref_cut_recording)/48000)
+print('Tuning deviation: ', ref_tuning)
+# print('Onset start:', ref_start_sec, '\nOnset end:', ref_end_sec, 
+print('Recording duration in seconds:', ref_length)
 print('Estimated key:', refmax)
 print('-'*100)
 
 print('\033[1m' + 'Test Recording ' + test_track + '\033[0m')
+print('Tuning deviation: ', test_tuning)
 print('Onset start:', test_start_sec, '\nOnset end:', test_end_sec, '\nRecording duration in seconds:', len(test_cut_recording)/48000)
-print('Estimated key:', testmax, '\nshift in semitones:', shift)
+print('Estimated key:', testmax, '\nshift in semitones:', shift, '\nAltered Key :', newkey)
 print('-'*100)
 
 
@@ -233,10 +256,20 @@ Delta = D[-1, :] / N
 pos = dtw.mininma_from_matching_function(Delta, rho= N//2, tau= 0.1)
 matches = dtw.matches_dtw(pos, D, stepsize= 2)
 
+# Indices (same as matches, but in seconds)
+b_ast = round(D[-1, :].argmin()* hopsize / fs + (N / fs) / 2)
+a_ast = round(P[0, 1]* hopsize / fs + (N / fs) / 2)
+sta_ref= round(ref_recording[0]* hopsize / fs + (N / fs) / 2)
+end_ref= round(ref_length)
+
+#Jaccard Index
+jaccard= post.relativeOverlap(a_ast, b_ast, sta_ref, end_ref)
+
 #print it aaall
 print('DTW distance DTW(CENS_ref, CENS_test):',D[-1, -1])
 print('Matches (features):', matches)
 dtw.print_formatted_matches(matches, hopsize, fs, N)
+print('Jaccard Index: ', jaccard)
 fig, ax = plt.subplots(2, 1, gridspec_kw={'width_ratios': [1], 'height_ratios': [1, 1]}, figsize=(8, 4), constrained_layout=True)
 vis.plot_accCostMatrix_and_Delta(D, P, Delta, matches, ax,  ref_track, test_track, 1)
 plt.show()

@@ -3,6 +3,7 @@ import librosa
 from scipy import signal
 
 
+
 def normalize_feature_sequence(X, norm='2', threshold=0.0001, v=None):
     """Normalizes the columns of a feature sequence
 
@@ -158,3 +159,27 @@ def cyclic_shift(C, shift=1):
     """
     C_shift = np.roll(C, shift=shift, axis=0)
     return C_shift
+
+def relativeOverlap(a_start, a_end, b_start, b_end):  
+    """ computes Jaccard index for two Quantities
+
+    From: Stuber (2021)
+    
+    Args:
+        a_start: start of the computed segment in seconds
+        a_end: end of the computed segment in seconds
+        b_start: start of the reference segment in seconds
+        b_end: end of the reference segment in seconds
+    
+    Returns:
+        Relative overlap in percent (0.8 = 80%)
+    """  
+    if b_start > a_end or a_start > b_end:
+        intersection = 0.00
+    else:
+        intersection = min(a_end, b_end) - max(a_start, b_start)
+    
+    union = (a_end - a_start) + (b_end - b_start) - intersection
+        
+    return intersection / union, intersection
+        

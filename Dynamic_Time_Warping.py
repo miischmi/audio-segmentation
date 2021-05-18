@@ -246,5 +246,5 @@ def print_formatted_matches(matches, hopsize, Fs, N):
         s = time.strftime('%H:%M:%S', time.gmtime(s * hopsize / Fs + (N / Fs) / 2))
         t = time.strftime('%H:%M:%S', time.gmtime(t * hopsize / Fs + (N / Fs) / 2))
         matches_sec.append([s, t])
-    return print('Matches (seconds):', matches_sec)
+    return print('\tMatches (timestamp):', matches_sec)
 
