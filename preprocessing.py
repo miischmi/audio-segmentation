@@ -61,6 +61,14 @@ def compute_novelty_spectrum(X, Fs=1, N=1024, H=256, gamma=100, M=10, norm=1):
     return novelty_spectrum, Fs_feature
 
 def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs):
+    """ Compute a chromagram either using STFT or a multirate filter bank (IIRT)
+
+    Args:
+        See individual methods
+    
+    Returns:
+        A chromagram
+    """
     tuning = kwargs.get('tuning', 0.0)
     norm = kwargs.get('norm', None)
     if stft:
@@ -76,6 +84,7 @@ def get_chromagram(recording, sr, frame_length, hopsize, stft = False, **kwargs)
         return librosa.feature.chroma_cqt(C=time_freq, bins_per_octave=bins_per_octave, n_octaves=n_octaves, fmin=librosa.midi_to_hz(midi), norm=norm)
 
 def get_chromagrams(segments, sr, frame_length, hopsize, stft = False, **kwargs):
+    """Compute Chromagrams for a list of segments"""
     segments_time_freq=[]
     for segment in segments:
         segments_time_freq.append(get_chromagram(segment, sr, frame_length, hopsize, stft = False, **kwargs))

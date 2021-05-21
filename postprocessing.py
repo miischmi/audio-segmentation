@@ -146,7 +146,8 @@ def compute_CENS_from_chromagrams_seg(segments, Fs= 1, ell=41, d=10, quant= True
     return cens_array, Fs_CENS
 
 def cyclic_shift(C, shift=1):
-    """Cyclically shift a chromagram
+    """Cyclically shift a chromagram. Shifts a chroma vector by a certain number of semitones. 
+    In other words, the chroma band D♯ becomes the chroma band E, the E becomes F and so on, and the last band B becomes C.
 
     From: FMP-Notebooks, Müller & Zalkow (2019); Notebook: C3/C3S1_TranspositionTuning.ipynb
 
